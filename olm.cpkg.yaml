@@ -1,0 +1,6 @@
+apiVersion: package-operator.run/v1alpha1
+kind: ClusterPackage
+metadata:
+  name: operator-lifecycle-manager
+spec:
+  image: quay.io/nschiede/package-olm:v0.28.0

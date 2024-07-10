@@ -1,0 +1,42 @@
+apiVersion: manifests.package-operator.run/v1alpha1
+kind: PackageManifest
+metadata:
+  name: operator-lifecycle-manager
+spec:
+  scopes:
+  - Cluster
+  phases:
+  - name: crds
+  - name: namespaces
+  - name: rbac
+  - name: deploy
+  - name: pkg-server
+  - name: catalog
+  availabilityProbes:
+  - probes:
+    - condition:
+        status: "True"
+        type: Available
+    - fieldsEqual:
+        fieldA: .status.updatedReplicas
+        fieldB: .status.replicas
+    selector:
+      kind:
+        group: apps
+        kind: Deployment
+  - probes:
+    - condition:
+        status: "True"
+        type: Established
+    selector:
+      kind:
+        group: apiextensions.k8s.io
+        kind: CustomResourceDefinition
+  - probes:
+    - cel:
+        message: CSV not succeeded
+        rule: self.status.phase == "Succeeded"
+    selector:
+      kind:
+        group: operators.coreos.com
+        kind: ClusterServiceVersion
